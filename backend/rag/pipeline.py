@@ -17,12 +17,20 @@ from backend.memory.long_term import LongTermMemory
 logger = get_logger(__name__)
 
 
+def _make_openai_client() -> AsyncOpenAI:
+    """Create an OpenAI-compatible client, using Gemini gateway if configured."""
+    kwargs: dict[str, Any] = {"api_key": settings.openai_api_key}
+    if settings.openai_base_url:
+        kwargs["base_url"] = settings.openai_base_url
+    return AsyncOpenAI(**kwargs)
+
+
 # ── Query Transformer ─────────────────────────────────────────
 class QueryTransformer:
     """HyDE + multi-query expansion for better retrieval."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI(api_key=settings.openai_api_key)
+        self._client = _make_openai_client()
 
     async def transform(self, query: str, context: str = "") -> list[str]:
         """Generate multiple query variants for better recall."""
@@ -41,11 +49,17 @@ Return JSON:
             response = await self._client.chat.completions.create(
                 model=settings.openai_model,
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
                 temperature=0.3,
                 max_tokens=500,
             )
-            data = json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content or "{}"
+            # Strip markdown code fences if present
+            if "```" in content:
+                import re
+                m = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", content)
+                if m:
+                    content = m.group(1)
+            data = json.loads(content)
             queries = [query] + data.get("alternatives", []) + [data.get("hyde_excerpt", "")]
             return [q for q in queries if q.strip()][:5]
         except Exception:
@@ -91,7 +105,7 @@ class CrossEncoderReranker:
     """Reranks retrieved documents using LLM relevance scoring."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI(api_key=settings.openai_api_key)
+        self._client = _make_openai_client()
 
     async def rerank(
         self,
@@ -125,11 +139,16 @@ Return JSON: {{"scores": [0.9, 0.7, ...]}} (one score per document, in order)"""
             response = await self._client.chat.completions.create(
                 model=settings.openai_model,
                 messages=[{"role": "user", "content": prompt}],
-                response_format={"type": "json_object"},
                 temperature=0.0,
                 max_tokens=200,
             )
-            data = json.loads(response.choices[0].message.content)
+            content = response.choices[0].message.content or "{}"
+            if "```" in content:
+                import re
+                m = re.search(r"```(?:json)?\s*([\s\S]*?)\s*```", content)
+                if m:
+                    content = m.group(1)
+            data = json.loads(content)
             scores = data.get("scores", [])
 
             for i, doc in enumerate(candidates):
@@ -149,7 +168,7 @@ class ContextCompressor:
     """Compresses retrieved context to fit LLM context window."""
 
     def __init__(self) -> None:
-        self._client = AsyncOpenAI(api_key=settings.openai_api_key)
+        self._client = _make_openai_client()
 
     async def compress(
         self,

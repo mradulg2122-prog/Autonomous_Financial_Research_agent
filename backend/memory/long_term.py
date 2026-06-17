@@ -46,7 +46,10 @@ async def get_qdrant() -> AsyncQdrantClient:
 def get_openai() -> AsyncOpenAI:
     global _openai_client
     if _openai_client is None:
-        _openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
+        kwargs: dict[str, Any] = {"api_key": settings.openai_api_key}
+        if settings.openai_base_url:
+            kwargs["base_url"] = settings.openai_base_url
+        _openai_client = AsyncOpenAI(**kwargs)
     return _openai_client
 
 
