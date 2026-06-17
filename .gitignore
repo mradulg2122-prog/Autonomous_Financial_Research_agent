@@ -1,0 +1,93 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables (NEVER commit!)
+.env
+*.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite3
+
+# Docker
+.dockerignore
+
+# Node (if any frontend tooling)
+node_modules/
+.npm/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets
+*.pem
+*.key
+*.cert
+
+# Alembic versions (keep track but not data)
+backend/db/migrations/versions/*.pyc
+
+# Reports (generated at runtime)
+reports/generated/
+
+# Database/Storage (Runtime Data)
+storage/
+snapshots/
+dump.rdb
+.qdrant-initialized
+
+# Infrastructure Binaries & Large Dependencies (never commit)
+infra/pgdata/
+infra/pgsql/
+infra/qdrant/
+infra/qdrant_storage/
+infra/redis/
+infra/redis-cygwin/
+infra/snapshots/
+infra/storage/
+infra/*.zip
+infra/*.log
+infra/.qdrant-initialized
+
+

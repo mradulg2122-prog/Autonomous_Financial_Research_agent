@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ARA-1 | Autonomous Financial Research Agent</title>
+  <meta name="description" content="ARA-1 is an autonomous AI financial research system that generates institutional-quality investment research reports using a multi-agent architecture." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="src/styles/main.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <nav class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3v18h18"/>
+            <path d="m7 16 4-8 4 4 3-6"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <span class="brand-name">ARA-1</span>
+          <span class="brand-sub">Financial Research</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-view="dashboard" id="nav-dashboard">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+          Dashboard
+        </a>
+        <a class="nav-item" data-view="agent-trace" id="nav-agent-trace">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+          Agent Traces
+        </a>
+        <a class="nav-item" data-view="tool-monitor" id="nav-tool-monitor">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+          Tool Monitor
+        </a>
+        <a class="nav-item" data-view="memory" id="nav-memory">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4.03 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4.03 3 9 3s9-1.34 9-3"/></svg>
+          Memory
+        </a>
+        <a class="nav-item" data-view="report" id="nav-report">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+          Reports
+        </a>
+        <a class="nav-item" data-view="evaluation" id="nav-evaluation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+          Evaluation
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="api-status" id="api-status">
+          <div class="status-dot"></div>
+          <span>API Connected</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <h1 class="page-title" id="page-title">Research Dashboard</h1>
+          <p class="page-subtitle" id="page-subtitle">Autonomous multi-agent financial research</p>
+        </div>
+        <div class="top-bar-right">
+          <div class="ws-indicator" id="ws-indicator">
+            <div class="ws-dot"></div>
+            <span>Live</span>
+          </div>
+          <button class="btn btn-primary" id="new-research-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            New Research
+          </button>
+        </div>
+      </header>
+
+      <!-- View Container -->
+      <div class="view-container" id="view-container">
+        <!-- Dashboard View -->
+        <div class="view active" id="view-dashboard">
+          <!-- Query Panel -->
+          <div class="query-panel" id="query-panel">
+            <div class="query-panel-inner">
+              <div class="query-hero">
+                <div class="query-hero-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="32" height="32"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
+                <h2>Start a Research Session</h2>
+                <p>Ask ARA-1 to research any publicly traded company</p>
+              </div>
+              <div class="query-form">
+                <div class="form-group">
+                  <label for="research-query">Research Query</label>
+                  <textarea
+                    id="research-query"
+                    rows="3"
+                    placeholder="e.g. Generate a comprehensive investment research report for Apple Inc. (AAPL) covering financials, risks, and competitive position."
+                  ></textarea>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="ticker-input">Ticker Symbol (Optional)</label>
+                    <input id="ticker-input" type="text" placeholder="e.g. AAPL" maxlength="10" />
+                  </div>
+                  <div class="form-group">
+                    <label for="company-name-input">Company Name (Optional)</label>
+                    <input id="company-name-input" type="text" placeholder="e.g. Apple Inc." />
+                  </div>
+                </div>
+                <button class="btn btn-primary btn-large" id="submit-research">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><polygon points="5,3 19,12 5,21 5,3"/></svg>
+                  Launch Research
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Metrics Row -->
+          <div class="metrics-row" id="metrics-row">
+            <div class="metric-card">
+              <div class="metric-icon research-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-value" id="metric-sessions">0</span>
+                <span class="metric-label">Research Sessions</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon report-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-value" id="metric-reports">0</span>
+                <span class="metric-label">Reports Generated</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon agent-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4"/></svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-value">9</span>
+                <span class="metric-label">Active Agents</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-icon tool-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+              </div>
+              <div class="metric-info">
+                <span class="metric-value">15</span>
+                <span class="metric-label">Available Tools</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Active Session Panel -->
+          <div class="active-session-panel hidden" id="active-session-panel">
+            <div class="session-header">
+              <div class="session-status-group">
+                <div class="session-spinner" id="session-spinner"></div>
+                <div class="session-info">
+                  <span class="session-status-text" id="session-status-text">Initializing...</span>
+                  <span class="session-id-text" id="session-id-display"></span>
+                </div>
+              </div>
+              <div class="session-ticker" id="session-ticker-badge"></div>
+            </div>
+
+            <!-- Agent Pipeline Visualizer -->
+            <div class="pipeline-visual">
+              <div class="pipeline-node" id="node-planner" data-agent="planner_agent">
+                <div class="node-icon">📋</div>
+                <div class="node-label">Planner</div>
+                <div class="node-status-dot"></div>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-node" id="node-research" data-agent="parallel_research">
+                <div class="node-icon">🔬</div>
+                <div class="node-label">Research</div>
+                <div class="node-status-dot"></div>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-node" id="node-verify" data-agent="fact_verification_agent">
+                <div class="node-icon">✅</div>
+                <div class="node-label">Verify</div>
+                <div class="node-status-dot"></div>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-node" id="node-synthesis" data-agent="synthesis_agent">
+                <div class="node-icon">🧠</div>
+                <div class="node-label">Synthesis</div>
+                <div class="node-status-dot"></div>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-node" id="node-report" data-agent="report_writer_agent">
+                <div class="node-icon">📄</div>
+                <div class="node-label">Report</div>
+                <div class="node-status-dot"></div>
+              </div>
+              <div class="pipeline-arrow">→</div>
+              <div class="pipeline-node" id="node-eval" data-agent="evaluation_agent">
+                <div class="node-icon">📊</div>
+                <div class="node-label">Evaluate</div>
+                <div class="node-status-dot"></div>
+              </div>
+            </div>
+
+            <!-- Live Event Feed -->
+            <div class="event-feed-container">
+              <h3 class="feed-title">Live Events</h3>
+              <div class="event-feed" id="event-feed"></div>
+            </div>
+          </div>
+
+          <!-- Recent Sessions Table -->
+          <div class="sessions-table-panel">
+            <div class="panel-header">
+              <h3>Recent Sessions</h3>
+              <button class="btn btn-ghost btn-sm" id="refresh-sessions-btn">↻ Refresh</button>
+            </div>
+            <div class="sessions-table-wrapper">
+              <table class="data-table" id="sessions-table">
+                <thead>
+                  <tr>
+                    <th>Query</th>
+                    <th>Ticker</th>
+                    <th>Status</th>
+                    <th>Duration</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="sessions-tbody">
+                  <tr><td colspan="5" class="empty-state">No sessions yet. Start your first research above.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent Trace View -->
+        <div class="view" id="view-agent-trace">
+          <div class="trace-container">
+            <div class="trace-selector">
+              <label for="trace-session-select">Select Session:</label>
+              <select id="trace-session-select"><option value="">-- Select --</option></select>
+              <button class="btn btn-ghost btn-sm" id="load-trace-btn">Load Trace</button>
+            </div>
+            <div class="trace-content" id="trace-content">
+              <div class="placeholder-state">
+                <div class="placeholder-icon">🔍</div>
+                <p>Select a session to view its agent trace</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Monitor View -->
+        <div class="view" id="view-tool-monitor">
+          <div class="tools-grid" id="tools-grid">
+            <div class="placeholder-state"><div class="placeholder-icon">🔧</div><p>Loading tools...</p></div>
+          </div>
+        </div>
+
+        <!-- Memory View -->
+        <div class="view" id="view-memory">
+          <div class="memory-tabs">
+            <button class="memory-tab active" data-tab="short-term">Short-Term (Redis)</button>
+            <button class="memory-tab" data-tab="long-term">Long-Term (Qdrant)</button>
+            <button class="memory-tab" data-tab="episodic">Episodic (PostgreSQL)</button>
+          </div>
+          <div class="memory-content" id="memory-content">
+            <div class="memory-search">
+              <input id="memory-session-id" type="text" placeholder="Session ID for short-term, or search query for long-term..." />
+              <button class="btn btn-primary btn-sm" id="memory-search-btn">Search</button>
+            </div>
+            <div class="memory-results" id="memory-results">
+              <div class="placeholder-state"><div class="placeholder-icon">💾</div><p>Enter a session ID or search query</p></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Report View -->
+        <div class="view" id="view-report">
+          <div class="report-container">
+            <div class="report-selector">
+              <label for="report-session-select">Select Session:</label>
+              <select id="report-session-select"><option value="">-- Select --</option></select>
+              <button class="btn btn-primary btn-sm" id="load-report-btn">Load Report</button>
+              <button class="btn btn-ghost btn-sm" id="export-markdown-btn">Export MD</button>
+            </div>
+            <div class="report-content" id="report-content">
+              <div class="placeholder-state">
+                <div class="placeholder-icon">📄</div>
+                <p>Select a completed session to view its report</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evaluation View -->
+        <div class="view" id="view-evaluation">
+          <div class="eval-container">
+            <div class="eval-header">
+              <div class="eval-selector">
+                <select id="eval-session-select"><option value="">-- Select Session --</option></select>
+                <button class="btn btn-primary btn-sm" id="load-eval-btn">Load Scores</button>
+              </div>
+              <button class="btn btn-accent btn-sm" id="run-benchmarks-btn">▶ Run Benchmarks</button>
+            </div>
+            <div class="eval-content" id="eval-content">
+              <div class="placeholder-state">
+                <div class="placeholder-icon">📊</div>
+                <p>Select a session to view evaluation metrics</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="src/app.js" type="module"></script>
+</body>
+</html>

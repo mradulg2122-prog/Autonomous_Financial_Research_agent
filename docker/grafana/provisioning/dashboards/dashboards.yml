@@ -1,0 +1,11 @@
+apiVersion: 1
+
+providers:
+  - name: ARA-1
+    orgId: 1
+    folder: "ARA-1"
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards

@@ -1,0 +1,99 @@
+{
+  "title": "ARA-1 Operational Dashboard",
+  "uid": "ara1-main",
+  "version": 1,
+  "schemaVersion": 36,
+  "timezone": "browser",
+  "refresh": "10s",
+  "panels": [
+    {
+      "id": 1, "type": "stat", "gridPos": { "x": 0, "y": 0, "w": 4, "h": 4 },
+      "title": "Total Research Sessions",
+      "targets": [{ "expr": "sum(ara1_research_sessions_total)", "legendFormat": "Sessions" }],
+      "options": { "colorMode": "background", "graphMode": "area", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "blue", "value": null }] } } }
+    },
+    {
+      "id": 2, "type": "stat", "gridPos": { "x": 4, "y": 0, "w": 4, "h": 4 },
+      "title": "Completed Sessions",
+      "targets": [{ "expr": "ara1_research_sessions_total{status=\"complete\"}", "legendFormat": "Complete" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "green", "value": null }] } } }
+    },
+    {
+      "id": 3, "type": "stat", "gridPos": { "x": 8, "y": 0, "w": 4, "h": 4 },
+      "title": "Failed Sessions",
+      "targets": [{ "expr": "ara1_research_sessions_total{status=\"failed\"}", "legendFormat": "Failed" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "red", "value": null }] } } }
+    },
+    {
+      "id": 4, "type": "stat", "gridPos": { "x": 12, "y": 0, "w": 4, "h": 4 },
+      "title": "Active Sessions",
+      "targets": [{ "expr": "ara1_active_sessions", "legendFormat": "Active" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "thresholds" }, "thresholds": { "steps": [{ "color": "yellow", "value": null }] } } }
+    },
+    {
+      "id": 5, "type": "stat", "gridPos": { "x": 16, "y": 0, "w": 4, "h": 4 },
+      "title": "WebSocket Connections",
+      "targets": [{ "expr": "ara1_websocket_connections", "legendFormat": "WS" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "purple" } } }
+    },
+    {
+      "id": 6, "type": "stat", "gridPos": { "x": 20, "y": 0, "w": 4, "h": 4 },
+      "title": "Reports Generated",
+      "targets": [{ "expr": "ara1_reports_generated_total", "legendFormat": "Reports" }],
+      "fieldConfig": { "defaults": { "color": { "mode": "fixed", "fixedColor": "teal" } } }
+    },
+    {
+      "id": 7, "type": "timeseries", "gridPos": { "x": 0, "y": 4, "w": 12, "h": 8 },
+      "title": "Research Session Duration (seconds)",
+      "targets": [
+        { "expr": "histogram_quantile(0.50, rate(ara1_research_duration_seconds_bucket[5m]))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, rate(ara1_research_duration_seconds_bucket[5m]))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, rate(ara1_research_duration_seconds_bucket[5m]))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "id": 8, "type": "timeseries", "gridPos": { "x": 12, "y": 4, "w": 12, "h": 8 },
+      "title": "Tool Calls per Minute",
+      "targets": [
+        { "expr": "sum(rate(ara1_tool_calls_total[1m])) by (tool_name)", "legendFormat": "{{tool_name}}" }
+      ]
+    },
+    {
+      "id": 9, "type": "timeseries", "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "title": "Agent Execution Rate",
+      "targets": [
+        { "expr": "sum(rate(ara1_agent_executions_total[5m])) by (agent_name)", "legendFormat": "{{agent_name}}" }
+      ]
+    },
+    {
+      "id": 10, "type": "timeseries", "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "title": "LLM Tokens Used",
+      "targets": [
+        { "expr": "rate(ara1_llm_tokens_total{token_type=\"prompt\"}[5m])", "legendFormat": "Prompt tokens/s" },
+        { "expr": "rate(ara1_llm_tokens_total{token_type=\"completion\"}[5m])", "legendFormat": "Completion tokens/s" }
+      ]
+    },
+    {
+      "id": 11, "type": "histogram", "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "title": "Evaluation Score Distribution",
+      "targets": [{ "expr": "ara1_evaluation_scores_bucket", "legendFormat": "Score bucket {{le}}" }]
+    },
+    {
+      "id": 12, "type": "timeseries", "gridPos": { "x": 12, "y": 20, "w": 12, "h": 8 },
+      "title": "Tool Success Rate",
+      "targets": [
+        { "expr": "sum(rate(ara1_tool_calls_total{success=\"True\"}[5m])) / sum(rate(ara1_tool_calls_total[5m]))", "legendFormat": "Success rate" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1 } }
+    },
+    {
+      "id": 13, "type": "table", "gridPos": { "x": 0, "y": 28, "w": 24, "h": 8 },
+      "title": "Tool Performance",
+      "targets": [
+        { "expr": "topk(15, sum(rate(ara1_tool_calls_total[5m])) by (tool_name))", "legendFormat": "{{tool_name}}", "instant": true }
+      ],
+      "options": { "showHeader": true }
+    }
+  ]
+}
