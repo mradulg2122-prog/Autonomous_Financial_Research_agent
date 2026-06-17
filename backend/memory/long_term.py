@@ -32,13 +32,14 @@ _openai_client: Optional[AsyncOpenAI] = None
 async def get_qdrant() -> AsyncQdrantClient:
     global _qdrant_client
     if _qdrant_client is None:
-        kwargs: dict[str, Any] = {
-            "host": settings.qdrant_host,
-            "port": settings.qdrant_port,
-        }
-        if settings.qdrant_api_key:
-            kwargs["api_key"] = settings.qdrant_api_key
-        _qdrant_client = AsyncQdrantClient(**kwargs)
+        # prefer_grpc=False forces HTTP/REST mode, avoiding Windows DLL policy issues
+        # that block the gRPC native extension (cygrpc).
+        _qdrant_client = AsyncQdrantClient(
+            host=settings.qdrant_host,
+            port=settings.qdrant_port,
+            prefer_grpc=False,
+            api_key=settings.qdrant_api_key or None,
+        )
     return _qdrant_client
 
 
